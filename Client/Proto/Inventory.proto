@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option csharp_namespace = "Client.Proto";
+
+service Inventory {
+    rpc GetProductById (ProductIdRequest) returns (ProductExistenceResponse);
+    rpc AddProduct (Product) returns (AddProductResponse);
+    rpc UpdateProduct (Product) returns (UpdateProductResponse);
+}
+
+message Product {
+    int32 id = 1;
+    string title = 2;
+    double price = 3;
+    int32 quantity = 4;
+}
+
+message ProductIdRequest {
+    int32 id = 1;
+}
+
+message ProductExistenceResponse {
+    bool exists = 1;
+}
+
+message AddProductResponse {
+    string message = 1;
+}
+
+message UpdateProductResponse {
+    string message = 1;
+}
