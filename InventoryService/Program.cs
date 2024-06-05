@@ -1,48 +1,24 @@
+using InventoryService.Handler;
 using InventoryService.Services;
+using Microsoft.AspNetCore.Authentication;
+
+const string Key = "X-Api-Key";
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGrpc();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = Key;
+}).AddScheme<AuthenticationSchemeOptions, ApuAuthHandler>
+(Key,configureOptions => { });
 var app = builder.Build();
 app.MapGrpcService<InventoryServiceFunctions>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
+//app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
-
-//var summaries = new[]
-//{
-//    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-//};
-
-//app.MapGet("/weatherforecast", () =>
-//{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//        new WeatherForecast
-//        (
-//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//            Random.Shared.Next(-20, 55),
-//            summaries[Random.Shared.Next(summaries.Length)]
-//        ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast")
-//.WithOpenApi();
-
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapGrpcService<AuthService>();
 app.Run();
-
-//internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-//{
-//    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-//}
